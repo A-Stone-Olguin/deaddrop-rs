@@ -5,6 +5,9 @@ use std::fs::OpenOptions;
 use std::io::prelude::*;
 
 pub fn new_user(user: String) {
+    // File create/open for append
+    let mut file = OpenOptions::new().create(true).append(true).open("logs.txt").unwrap();
+
     let user_exists = match users::get_user(user.clone()) {
         Some(_) => true,
         None => false,
@@ -14,14 +17,16 @@ pub fn new_user(user: String) {
         panic!("User not recognized");
     }
 
-    if !session::authenticate(user).expect("Unable to authenticate user") {
+    if !session::authenticate(user.clone()).expect("Unable to authenticate user") {
+        // Invalid password for new user
+        if let Err(e) = writeln!(file, "New user invalid login attempt: {}", user) {
+            eprintln!("Couldn't write to file: {}", e);
+        }
         panic!("Unablee to authenticate user");
     }
 
     println!("Username: ");
 
-    // File create/open for append
-    let mut file = OpenOptions::new().create(true).append(true).open("logs.txt").unwrap();
 
     // Here is where I will do my mitigation to ensure no duplicate username is created
     let mut valid_user = false;
