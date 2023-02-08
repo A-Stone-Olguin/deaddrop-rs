@@ -16,10 +16,33 @@ pub fn new_user(user: String) {
     }
 
     println!("Username: ");
-    let new_user = get_new_username();
-    let new_pass_hash = session::get_password();
 
-    users::set_user_pass_hash(new_user, new_pass_hash);
+
+
+    // Here is where I will do my mitigation to ensure no duplicate username is created
+    let mut valid_user = false;
+
+    while !valid_user {
+        let temp_user = get_new_username();
+        
+
+        // Determine if new username is valid
+        valid_user = match users::get_user(temp_user.clone()) {
+            Some(_) => false,       // If we get some int for idnum, username not vaild 
+            None    => true,        // no user idnum found, valid username
+        };
+
+        // If not valid, prompt for a new username
+        if !valid_user {
+            println!("Not a valid username, please try a new one");
+        }
+        // Else do the rest as previously created
+        else {
+            let new_user = temp_user;
+            let new_pass_hash = session::get_password();
+            users::set_user_pass_hash(new_user, new_pass_hash);
+        }
+    }
 }
 
 fn get_new_username() -> String {

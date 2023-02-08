@@ -21,3 +21,9 @@ Then run `cargo run -- --new --user <username here>` and you will be prompted to
 ## Database
 
 Data gets stored into the local database file dd.db. This file will not by synched to git repos. Delete this file if you don't set up a user properly on the first go
+
+## Mitigation 
+
+My mitigation was to prevent duplicate usernames from being created. In doing so, I loop continuously until a unique username is created. 
+
+Once a unique username is created, the loop will end by doing the operations implemented in the old version of the deaddrop.
