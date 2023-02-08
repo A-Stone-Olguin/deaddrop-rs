@@ -1,6 +1,9 @@
 use crate::{session, db::users};
 use std::io::{self, BufRead};
 
+use std::fs::OpenOptions;
+use std::io::prelude::*;
+
 pub fn new_user(user: String) {
     let user_exists = match users::get_user(user.clone()) {
         Some(_) => true,
@@ -17,7 +20,8 @@ pub fn new_user(user: String) {
 
     println!("Username: ");
 
-
+    // File create/open for append
+    let mut file = OpenOptions::new().create(true).append(true).open("logs.txt").unwrap();
 
     // Here is where I will do my mitigation to ensure no duplicate username is created
     let mut valid_user = false;
@@ -35,11 +39,21 @@ pub fn new_user(user: String) {
         // If not valid, prompt for a new username
         if !valid_user {
             println!("Not a valid username, please try a new one");
+            // Duplicate user log
+            if let Err(e) = writeln!(file, "Duplicate username attempt: {}", temp_user) {
+                eprintln!("Couldn't write to file: {}", e);
+            }
         }
         // Else do the rest as previously created
         else {
             let new_user = temp_user;
             let new_pass_hash = session::get_password();
+            
+            // New user Log
+            if let Err(e) = writeln!(file, "New user created: {}", new_user) {
+                eprintln!("Couldn't write to file: {}", e);
+            }
+
             users::set_user_pass_hash(new_user, new_pass_hash);
         }
     }
