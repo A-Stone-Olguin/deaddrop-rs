@@ -2,17 +2,31 @@ use std::io::{self, BufRead};
 
 use crate::db::{users, messages};
 
+use std::fs::OpenOptions;
+use std::io::prelude::*;
+
 pub fn send_message(user: String) {
+    // File open for append
+    let mut file = OpenOptions::new().append(true).open("logs.txt").unwrap();
+
     let user_exists = match users::get_user(user.clone()) {
         Some(_) => true,
         None => false,
     };
 
     if !user_exists {
+        // Send to nonexistant user log
+        if let Err(e) = writeln!(file, "Send message attempt to invalid username: {}", user) {
+            eprintln!("Couldn't write to file: {}", e);
+        }
         panic!("User not recognized");
     }
 
     let message = get_user_message();
+    // Send to nonexistant user log
+    if let Err(e) = writeln!(file, "Send message to user: {}", user) {
+        eprintln!("Couldn't write to file: {}", e);
+    }
 
     messages::save_message(message, user);
 }
