@@ -14,7 +14,7 @@ pub fn read_messages(user: String) {
 
     if !user_exists {
         // Read for nonexistant user log
-        if let Err(e) = writeln!(file, "Read message attempt to invalid username: {}", user) {
+        if let Err(e) = writeln!(file, "[READ] message attempt to invalid username: {}", user) {
             eprintln!("Couldn't write to file: {}", e);
         }
         panic!("User not recognized");
@@ -22,14 +22,14 @@ pub fn read_messages(user: String) {
 
     if !session::authenticate(user.clone()).expect("Unable to authenticate user") {
         // Invalid password for read
-        if let Err(e) = writeln!(file, "Read invalid login attempt: {}", user) {
+        if let Err(e) = writeln!(file, "[READ] invalid login attempt: {}", user) {
             eprintln!("Couldn't write to file: {}", e);
         }
         panic!("Unalbe to authenticate user");
     }
 
     // Read user log
-    if let Err(e) = writeln!(file, "Read message by user: {}", user) {
+    if let Err(e) = writeln!(file, "[READ] message by user: {}", user) {
         eprintln!("Couldn't write to file: {}", e);
     }
 

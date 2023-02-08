@@ -19,7 +19,7 @@ pub fn new_user(user: String) {
 
     if !session::authenticate(user.clone()).expect("Unable to authenticate user") {
         // Invalid password for new user
-        if let Err(e) = writeln!(file, "New user invalid login attempt: {}", user) {
+        if let Err(e) = writeln!(file, "[NEW] user invalid login attempt: {}", user) {
             eprintln!("Couldn't write to file: {}", e);
         }
         panic!("Unablee to authenticate user");
@@ -45,7 +45,7 @@ pub fn new_user(user: String) {
         if !valid_user {
             println!("Not a valid username, please try a new one");
             // Duplicate user log
-            if let Err(e) = writeln!(file, "Duplicate username attempt: {}", temp_user) {
+            if let Err(e) = writeln!(file, "[NEW] duplicate username attempt: {}", temp_user) {
                 eprintln!("Couldn't write to file: {}", e);
             }
         }
@@ -55,7 +55,7 @@ pub fn new_user(user: String) {
             let new_pass_hash = session::get_password();
             
             // New user Log
-            if let Err(e) = writeln!(file, "New user created: {}", new_user) {
+            if let Err(e) = writeln!(file, "[NEW] user created: {}", new_user) {
                 eprintln!("Couldn't write to file: {}", e);
             }
 

@@ -4,6 +4,7 @@ use crate::db::{users, messages};
 
 use std::fs::OpenOptions;
 use std::io::prelude::*;
+use chrono::{Datelike, Timelike, Utc};
 
 pub fn send_message(user: String) {
     // File open for append
@@ -16,7 +17,7 @@ pub fn send_message(user: String) {
 
     if !user_exists {
         // Send to nonexistant user log
-        if let Err(e) = writeln!(file, "Send message attempt to invalid username: {}", user) {
+        if let Err(e) = writeln!(file, "[SEND] message attempt to invalid username: {}", user) {
             eprintln!("Couldn't write to file: {}", e);
         }
         panic!("User not recognized");
@@ -24,7 +25,7 @@ pub fn send_message(user: String) {
 
     let message = get_user_message();
     // Send to user log
-    if let Err(e) = writeln!(file, "Send message to user: {}", user) {
+    if let Err(e) = writeln!(file, "{:02}:{:02}:{:02} [SEND] message to user: {}", Utc::now().hour(), Utc::now().minute(), Utc::now().second(), user) {
         eprintln!("Couldn't write to file: {}", e);
     }
 
