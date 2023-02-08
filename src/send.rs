@@ -23,7 +23,7 @@ pub fn send_message(user: String) {
     }
 
     let message = get_user_message();
-    // Send to nonexistant user log
+    // Send to user log
     if let Err(e) = writeln!(file, "Send message to user: {}", user) {
         eprintln!("Couldn't write to file: {}", e);
     }
