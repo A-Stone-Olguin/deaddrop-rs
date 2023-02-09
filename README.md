@@ -27,3 +27,11 @@ Data gets stored into the local database file dd.db. This file will not by synch
 My mitigation was to prevent duplicate usernames from being created. In doing so, I loop continuously until a unique username is created. 
 
 Once a unique username is created, the loop will end by doing the operations implemented in the old version of the deaddrop.
+
+## Logging Strategy
+
+My logging code has minimal changes to the overall workflow. Only one change in giving ownership of a string changed in 'new.rs' which clones the username so that the username can be reused for the 'log_me' function.
+
+The main change I made was that I added a new file called log.rs. This file only holds a function called 'log_me'. This function logs the time, a tag for which verb, and the relevant user that will be recorded for the log.
+
+In the workflow in logs.txt, we have a few users be created, messages are sent, messages are read, and some errors such as invalid usernames or wrong passwords are logged as well.
