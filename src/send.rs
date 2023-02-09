@@ -1,14 +1,10 @@
 use std::io::{self, BufRead};
 
-use crate::db::{users, messages};
-
-use std::fs::OpenOptions;
-use std::io::prelude::*;
-use chrono::{Datelike, Timelike, Utc};
+use crate::{db::{users, messages}, log};
 
 pub fn send_message(user: String) {
-    // File open for append
-    let mut file = OpenOptions::new().append(true).open("logs.txt").unwrap();
+    // Tag for logging
+    let tag = "SEND";
 
     let user_exists = match users::get_user(user.clone()) {
         Some(_) => true,
@@ -16,18 +12,14 @@ pub fn send_message(user: String) {
     };
 
     if !user_exists {
-        // Send to nonexistant user log
-        if let Err(e) = writeln!(file, "[SEND] message attempt to invalid username: {}", user) {
-            eprintln!("Couldn't write to file: {}", e);
-        }
+        // Invalid username send log
+        log::log_me(tag, "message attempt to invalid username", &user);
         panic!("User not recognized");
     }
 
     let message = get_user_message();
     // Send to user log
-    if let Err(e) = writeln!(file, "{:02}:{:02}:{:02} [SEND] message to user: {}", Utc::now().hour(), Utc::now().minute(), Utc::now().second(), user) {
-        eprintln!("Couldn't write to file: {}", e);
-    }
+    log::log_me("SEND", "message to user", &user);
 
     messages::save_message(message, user);
 }

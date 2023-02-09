@@ -1,0 +1,23 @@
+16:06:50 [NEW] user created: aolguin1
+16:07:05 [NEW] user created: aolguin2
+16:07:18 [NEW] user created: aolguin3
+16:07:22 [SEND] message attempt to invalid username: 
+16:08:02 [SEND] message to user: aolguin1
+16:08:10 [SEND] message to user: aolguin1
+16:08:15 [SEND] message to user: aolguin1
+16:08:17 [SEND] message to user: aolguin1
+16:08:23 [SEND] message to user: aolguin1
+16:08:25 [SEND] message attempt to invalid username: aolguin
+16:08:28 [SEND] message attempt to invalid username: aolguin4
+16:08:51 [NEW] user created: aolguin4
+16:09:02 [SEND] message to user: aolguin2
+16:09:13 [READ] invalid login attempt: aolguin3
+16:09:24 [READ] message by user: aolguin3
+16:09:32 [READ] message by user: aolguin2
+16:09:40 [READ] invalid login attempt: aolguin1
+16:09:48 [READ] message by user: aolguin1
+16:10:10 [NEW] duplicate username attempt: aolguin2
+16:10:12 [NEW] duplicate username attempt: aolguin3
+16:10:13 [NEW] duplicate username attempt: aolguin4
+16:10:20 [NEW] user created: aolguin5
+16:10:33 [READ] message attempt to invalid username: aolguin6
