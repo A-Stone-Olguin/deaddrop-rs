@@ -1,10 +1,8 @@
 use std::io::{self, BufRead};
 use crate::{db::{users, messages}};
-use log::{info, error, warn};
+use log::{info, error};
 
 pub fn send_message(user: String) {
-    // Tag for logging
-    let tag = "SEND";
 
     let user_exists = match users::get_user(user.clone()) {
         Some(_) => true,

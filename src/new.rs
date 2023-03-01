@@ -3,8 +3,6 @@ use std::io::{self, BufRead};
 use log::{info, warn};
 
 pub fn new_user(user: String) {
-    // File create/open for append
-    let tag = "NEW";
 
     let user_exists = match users::get_user(user.clone()) {
         Some(_) => true,

@@ -2,8 +2,6 @@ use crate::{session, db::{messages, users}};
 use log::{info, error, warn};
 
 pub fn read_messages(user: String) {
-    // Tag for logging
-    let tag = "READ";
 
     let user_exists = match users::get_user(user.clone()) {
         Some(_) => true,
