@@ -23,8 +23,9 @@ pub fn new_user(user: String) {
 
     // Here is where I will do my mitigation to ensure no duplicate username is created
     let mut valid_user = false;
+    let mut new_user = String::from("");
     while !valid_user {
-        let new_user = get_new_username();
+        new_user = get_new_username();
         
         // Determine if new username is valid
         valid_user = match users::get_user(new_user.clone()) {
@@ -38,15 +39,13 @@ pub fn new_user(user: String) {
             // Duplicate user log
             info!("duplicate username attempt {}", new_user);
         }
-        else {
-            let new_pass_hash = session::get_password();
-            
-            // New user Log
-            info!("user created {}", new_user);
-
-            users::set_user_pass_hash(new_user, new_pass_hash);
-        }
     }
+    let new_pass_hash = session::get_password();
+    
+    // New user Log
+    info!("user created {}", new_user);
+
+    users::set_user_pass_hash(new_user, new_pass_hash);
 }
 
 fn get_new_username() -> String {
