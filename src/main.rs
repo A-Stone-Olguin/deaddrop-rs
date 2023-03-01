@@ -8,7 +8,6 @@ pub mod db;
 pub mod new;
 pub mod read;
 pub mod send;
-pub mod log;
 
 fn main() {
     let args = command!()
@@ -36,6 +35,8 @@ fn main() {
         )
         .get_matches();
 
+    // Create Logging initialization
+    log4rs::init_file("log4rs.yml", Default::default()).expect("Should initialize");
     let new = args.is_present("new");
     let read = args.is_present("read");
     let send = args.is_present("send");

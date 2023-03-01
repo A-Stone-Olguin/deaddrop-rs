@@ -1,6 +1,6 @@
 use std::io::{self, BufRead};
-
-use crate::{db::{users, messages}, log};
+use crate::{db::{users, messages}};
+use log::{info, error, warn};
 
 pub fn send_message(user: String) {
     // Tag for logging
@@ -13,13 +13,13 @@ pub fn send_message(user: String) {
 
     if !user_exists {
         // Invalid username send log
-        log::log_me(tag, "message attempt to invalid username", &user);
+        error!("message attempt to invalid username {}", user);
         panic!("User not recognized");
     }
 
     let message = get_user_message();
     // Send to user log
-    log::log_me("SEND", "message to user", &user);
+    info!("message to user {}", user);
 
     messages::save_message(message, user);
 }

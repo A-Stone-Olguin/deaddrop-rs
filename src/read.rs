@@ -1,4 +1,5 @@
-use crate::{session, db::{messages, users}, log};
+use crate::{session, db::{messages, users}};
+use log::{info, error, warn};
 
 pub fn read_messages(user: String) {
     // Tag for logging
@@ -11,18 +12,18 @@ pub fn read_messages(user: String) {
 
     if !user_exists {
         // Read for nonexistant user log
-        log::log_me(tag, "message attempt to invalid username", &user);
+        error!("message attempt to invalid username {}", user);
         panic!("User not recognized");
     }
 
     if !session::authenticate(user.clone()).expect("Unable to authenticate user") {
         // Invalid password for read
-        log::log_me(tag, "invalid login attempt", &user);
+        warn!("invalid login attempt {}", user);
         panic!("Unalbe to authenticate user");
     }
 
     // Read user log
-    log::log_me(tag, "message by user", &user);
+    info!("message by user {}", user);
 
     let messages = messages::get_messages_for_user(user);
     for message in messages {

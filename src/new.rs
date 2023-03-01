@@ -1,5 +1,6 @@
-use crate::{session, db::users, log};
+use crate::{session, db::users};
 use std::io::{self, BufRead};
+use log::{info, warn};
 
 pub fn new_user(user: String) {
     // File create/open for append
@@ -15,17 +16,15 @@ pub fn new_user(user: String) {
     }
 
     if !session::authenticate(user.clone()).expect("Unable to authenticate user") {
-        // Invalid password for new user
-        log::log_me(tag, "user invalid login attempt", &user);
+        // Invalid password for new user, warn for possible attacks
+        warn!("user invalid login attempt {}", user);
         panic!("Unablee to authenticate user");
     }
 
     println!("Username: ");
 
-
     // Here is where I will do my mitigation to ensure no duplicate username is created
     let mut valid_user = false;
-
     while !valid_user {
         let new_user = get_new_username();
         
@@ -39,13 +38,13 @@ pub fn new_user(user: String) {
         if !valid_user {
             println!("Not a valid username, please try a new one");
             // Duplicate user log
-            log::log_me(tag, "duplicate username attempt", &new_user);
+            info!("duplicate username attempt {}", new_user);
         }
         else {
             let new_pass_hash = session::get_password();
             
             // New user Log
-            log::log_me(tag, "user created", &new_user);
+            info!("user created {}", new_user);
 
             users::set_user_pass_hash(new_user, new_pass_hash);
         }
