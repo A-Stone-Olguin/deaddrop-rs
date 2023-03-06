@@ -23,7 +23,7 @@ pub fn new_user(user: String) {
 
 
     let mut valid_user = false;
-    let mut new_user = String::from("");
+    let mut new_user = String::new();
     while !valid_user {
         new_user = get_new_username();
         
