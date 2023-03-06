@@ -14,35 +14,33 @@ pub fn new_user(user: String) {
     }
 
     if !session::authenticate(user.clone()).expect("Unable to authenticate user") {
-        // Invalid password for new user, warn for possible attacks
+        // Warn in case this is an attack
         warn!("user invalid login attempt {}", user);
         panic!("Unablee to authenticate user");
     }
 
     println!("Username: ");
 
-    // Here is where I will do my mitigation to ensure no duplicate username is created
+
     let mut valid_user = false;
     let mut new_user = String::from("");
     while !valid_user {
         new_user = get_new_username();
         
-        // Determine if new username is valid
+        
         valid_user = match users::get_user(new_user.clone()) {
-            Some(_) => false,       // If we get some int for idnum, username not vaild 
-            None    => true,        // no user idnum found, valid username
+            Some(_) => false,       
+            None    => true,        
         };
 
-        // If not valid, prompt for a new username
+        // Prompt for a new username
         if !valid_user {
             println!("Not a valid username, please try a new one");
-            // Duplicate user log
             info!("duplicate username attempt {}", new_user);
         }
     }
     let new_pass_hash = session::get_password();
     
-    // New user Log
     info!("user created {}", new_user);
 
     users::set_user_pass_hash(new_user, new_pass_hash);

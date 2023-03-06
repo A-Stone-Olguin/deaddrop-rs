@@ -9,18 +9,15 @@ pub fn read_messages(user: String) {
     };
 
     if !user_exists {
-        // Read for nonexistant user log
         error!("message attempt to invalid username {}", user);
         panic!("User not recognized");
     }
 
     if !session::authenticate(user.clone()).expect("Unable to authenticate user") {
-        // Invalid password for read
         warn!("invalid login attempt {}", user);
         panic!("Unalbe to authenticate user");
     }
 
-    // Read user log
     info!("message by user {}", user);
 
     let messages = messages::get_messages_for_user(user);
