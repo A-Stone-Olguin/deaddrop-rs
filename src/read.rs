@@ -9,7 +9,7 @@ pub fn read_messages(user: String) {
     };
 
     if !user_exists {
-        error!("message attempt to invalid username {}", user);
+        error!("read message attempt to invalid username {}", user);
         panic!("User not recognized");
     }
 
@@ -18,7 +18,7 @@ pub fn read_messages(user: String) {
         panic!("Unalbe to authenticate user");
     }
 
-    info!("message by user {}", user);
+    info!("user {} read their message", user);
 
     let messages = messages::get_messages_for_user(user);
     for message in messages {

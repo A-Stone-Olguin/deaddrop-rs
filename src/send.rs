@@ -10,12 +10,12 @@ pub fn send_message(user: String) {
     };
 
     if !user_exists {
-        error!("message attempt to invalid username {}", user);
+        error!("send message attempt to invalid username {}", user);
         panic!("User not recognized");
     }
 
     let message = get_user_message();
-    info!("message to user {}", user);
+    info!("send message from user {}", user);
 
     messages::save_message(message, user);
 }
