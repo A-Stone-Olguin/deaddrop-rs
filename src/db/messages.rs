@@ -78,5 +78,29 @@ fn verified_hmac(message: String, hmac : String) -> bool {
     else {
         false
     }
+}
+
+pub fn attempt_to_change_hmac() {
+    let db = connect();
+    let new_hmac = "lmao I changed the hmac";
+    let condition = "";
+
+    let query = "UPDATE Messages SET hmac= :new_message WHERE hmac != :condition";
+    let mut stmt = db.prepare(query).expect("expected to prepare query");
+    stmt.execute(&[(":new_message", new_hmac), (":condition", condition)]).expect("expected query to execute, if HMAC is not read-only");
+    
+    // let successful_change = match stmt.execute(&[(":new_message", new_hmac), (":condition", condition)]) {
+    //     Ok(_) => true,
+    //     Err(_) => false,
+    // };
+
+    // if successful_change {
+    //     warn!("Uh oh! Someone successfully changed the HMAC :(");
+    // }
+    // else {
+    //     warn!("Someone attempted to change the HMAC!");
+    // }
     
 }
+
+//.expect("expected query to execute, if HMAC is not read-only");

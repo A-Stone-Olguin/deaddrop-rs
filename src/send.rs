@@ -8,6 +8,13 @@ pub fn send_message(user: String) {
     let mut sender = String::new();
     io::stdin().read_line(&mut sender).expect("failed to readline");
     let sender = sender.trim_end().to_string();
+
+    // This is specifically to show that we cannot change hmac, will reflect in log
+    if sender.clone() == "hmac" {
+        messages::attempt_to_change_hmac();
+        panic!("Attempt to change HMAC");
+    }
+
     let sender_exists = match users::get_user(sender.clone()) {
         Some(_) => true,
         None => false,
