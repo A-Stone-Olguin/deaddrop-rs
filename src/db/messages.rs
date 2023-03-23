@@ -14,10 +14,10 @@ pub fn get_messages_for_user(user: String) -> Vec<String> {
     messages
 }
 
-pub fn save_message(message: String, recipient: String) {
+pub fn save_message(message: String, recipient: String, send_user: String) {
     let db = connect();
 
-    let query = "INSERT INTO Messages (recipient, data) VALUES ((SELECT id FROM Users WHERE user = :recipient), :message);";
+    let query = "INSERT INTO Messages (recipient, data, sender) VALUES ((SELECT id FROM Users WHERE user = :recipient), :message, (SELECT id FROM Users Where user = :send_user));";
     let mut stmt = db.prepare(query).expect("expected to prepare statement correctly");
-    stmt.execute(&[(":recipient", &recipient), (":message", &message)]).expect("expected query to execute");
+    stmt.execute(&[(":recipient", &recipient), (":message", &message), (":send_user", &send_user)]).expect("expected query to execute");
 }
