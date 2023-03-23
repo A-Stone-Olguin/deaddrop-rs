@@ -56,7 +56,7 @@ fn create_hmac(message: String) -> String {
     let mut mac = HmacSha256::new_from_slice(b"328411b33fe55127421fa394995711658526ed47d0affad3fe56a0b3930c8689")
         .expect("HMAC can take any key size");
 
-    mac.update((&message).as_bytes());
+    mac.update((message).as_bytes());
 
     let result = mac.finalize();
     let code_bytes = result.into_bytes();
@@ -72,10 +72,11 @@ fn verified_hmac(message: String, hmac : String) -> bool {
 
     mac.update((message).as_bytes());
 
-    let hmac_bytes = (hmac).as_bytes();
-
-    match mac.verify_slice(&hmac_bytes[..]) {
-        Ok(_) => true,
-        Err(_mac_error) => false,
-    }   
+    if hex::encode(mac.finalize().into_bytes()) == hmac {
+        true
+    }
+    else {
+        false
+    }
+    
 }
