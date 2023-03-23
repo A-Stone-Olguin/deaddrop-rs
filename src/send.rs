@@ -7,7 +7,7 @@ pub fn send_message(user: String) {
     println!("Please input your username");
     let mut sender = String::new();
     io::stdin().read_line(&mut sender).expect("failed to readline");
-    let sender = sender.trim_end().to_string();
+    sender = sender.trim_end().to_string();
 
     // This is specifically to show that we cannot change hmac, will reflect in log
     if sender.clone() == "hmac" {
@@ -15,8 +15,14 @@ pub fn send_message(user: String) {
         panic!("Attempt to change HMAC");
     }
     else if sender.clone() == "message" {
-        messages::attempt_to_change_message();
-        std::process::exit(1);
+        println!("What message id do you want to modify?");
+        let mut new_message = String::new();
+        io::stdin().read_line(&mut new_message).expect("failed to readline");
+        new_message = new_message.trim_end().to_string();
+
+        messages::attempt_to_change_message(new_message);
+        // Technically correct exit, used for demonstration
+        std::process::exit(0);
     }
 
     let sender_exists = match users::get_user(sender.clone()) {

@@ -18,7 +18,7 @@ pub fn read_messages(user: String) {
         panic!("Unalbe to authenticate user");
     }
 
-    info!("user {} read their message", user);
+    info!("user {} read their messages", user);
 
     let messages = messages::get_messages_for_user(user);
     for message in messages {
