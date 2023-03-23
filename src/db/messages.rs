@@ -26,7 +26,7 @@ pub fn get_messages_for_user(user: String) -> Vec<String> {
             sender = send_row.get(0).expect("Expected a send_user value");
         }
 
-        message = "From user ".to_string() + &sender + ": " + &message;
+        message = format!("From user {}: {}", sender, message);
         messages.push(message);
     }
     messages
@@ -35,11 +35,11 @@ pub fn get_messages_for_user(user: String) -> Vec<String> {
 pub fn save_message(message: String, recipient: String, send_user: String) {
     let db = connect();
 
-    let hmac = create_hmac(message.clone());
+    let hmac_calc = create_hmac(message.clone());
 
-    let query = "INSERT INTO Messages (recipient, data, sender) VALUES ((SELECT id FROM Users WHERE user = :recipient), :message, (SELECT id FROM Users Where user = :send_user));";
+    let query = "INSERT INTO Messages (recipient, data, hmac, sender) VALUES ((SELECT id FROM Users WHERE user = :recipient), :message, :hmac, (SELECT id FROM Users Where user = :send_user));";
     let mut stmt = db.prepare(query).expect("expected to prepare statement correctly");
-    stmt.execute(&[(":recipient", &recipient), (":message", &message), (":send_user", &send_user)]).expect("expected query to execute");
+    stmt.execute(&[(":recipient", &recipient), (":message", &message), (":hmac", &hmac_calc), (":send_user", &send_user)]).expect("expected query to execute");
 }
 
 fn create_hmac(message: String) -> String {
