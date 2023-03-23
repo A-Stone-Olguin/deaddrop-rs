@@ -11,7 +11,7 @@ pub fn connect() -> Connection {
     
     if must_initialize_db {
         let query = fs::read_to_string("init.sql").expect("initial schema does not exist");
-        let commands = query.split(";\n");
+        let commands = query.split(";\n\n");
 
         for command in commands {
             connection.execute(command, ()).unwrap();

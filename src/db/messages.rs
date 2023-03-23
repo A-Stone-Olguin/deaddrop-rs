@@ -1,4 +1,6 @@
 use super::db::connect;
+use sha2::Sha256;
+use hmac::{Hmac, Mac};
 
 pub fn get_messages_for_user(user: String) -> Vec<String> {
     let db = connect();
@@ -33,7 +35,23 @@ pub fn get_messages_for_user(user: String) -> Vec<String> {
 pub fn save_message(message: String, recipient: String, send_user: String) {
     let db = connect();
 
+    let hmac = create_hmac(message.clone());
+
     let query = "INSERT INTO Messages (recipient, data, sender) VALUES ((SELECT id FROM Users WHERE user = :recipient), :message, (SELECT id FROM Users Where user = :send_user));";
     let mut stmt = db.prepare(query).expect("expected to prepare statement correctly");
     stmt.execute(&[(":recipient", &recipient), (":message", &message), (":send_user", &send_user)]).expect("expected query to execute");
+}
+
+fn create_hmac(message: String) -> String {
+    type HmacSha256 = Hmac<Sha256>;
+
+    let mut mac = HmacSha256::new_from_slice(b"328411b33fe55127421fa394995711658526ed47d0affad3fe56a0b3930c8689")
+        .expect("HMAC can take any key size");
+
+    mac.update((&message).as_bytes());
+
+    let result = mac.finalize();
+    let code_bytes = result.into_bytes();
+    let hex_code = hex::encode(code_bytes);
+    hex_code
 }
