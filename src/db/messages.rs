@@ -1,11 +1,12 @@
 use super::db::connect;
+use log::warn;
 use sha2::Sha256;
 use hmac::{Hmac, Mac};
 
 pub fn get_messages_for_user(user: String) -> Vec<String> {
     let db = connect();
 
-    let query = "SELECT data, sender FROM Messages WHERE recipient = (SELECT id FROM Users WHERE user = :user);";
+    let query = "SELECT data, hmac, sender FROM Messages WHERE recipient = (SELECT id FROM Users WHERE user = :user);";
     let mut stmt = db.prepare(query).expect("expected to prepare query");
     let mut rows = stmt.query(&[(":user", &user)]).expect("expected query to succeed");
 
@@ -17,7 +18,7 @@ pub fn get_messages_for_user(user: String) -> Vec<String> {
         let mut message : String = row.get(0).expect("expected a value in the row");
 
         // Big mess of sql to get the sender
-        let sender_id :i16 = row.get(1).expect("Expected a send_user value");
+        let sender_id :i16 = row.get(2).expect("Expected a send_user value");
         let sender_query ="SELECT user FROM Users WHERE id = :sender_id";
         let mut sender_statement = db.prepare(sender_query).expect("expected to prepare query");
         let mut sender_rows = sender_statement.query(&[(":sender_id", &sender_id)]).expect("expected query to succeed");
@@ -26,7 +27,14 @@ pub fn get_messages_for_user(user: String) -> Vec<String> {
             sender = send_row.get(0).expect("Expected a send_user value");
         }
 
-        message = format!("From user {}: {}", sender, message);
+        let hmac : String = row.get(1).expect("Expected an hmac");
+        if verified_hmac(message.clone(), hmac) {
+            message = format!("From user {}: {}", sender, message);
+        }
+        else {
+            warn!("Tampered message, failed hmac");
+            message = format!("[Warning!] Tampered message from user {}: {}", sender, message);
+        }
         messages.push(message);
     }
     messages
@@ -62,13 +70,12 @@ fn verified_hmac(message: String, hmac : String) -> bool {
     let mut mac = HmacSha256::new_from_slice(b"328411b33fe55127421fa394995711658526ed47d0affad3fe56a0b3930c8689")
         .expect("HMAC can take any key size");
 
-    mac.update((&message).as_bytes());
+    mac.update((message).as_bytes());
 
-    let hmac_bytes = &hmac.as_bytes();
+    let hmac_bytes = (hmac).as_bytes();
 
-    let result = match mac.verify_slice(&hmac_bytes[..]) {
+    match mac.verify_slice(&hmac_bytes[..]) {
         Ok(_) => true,
         Err(_mac_error) => false,
-    };
-    result    
+    }   
 }
