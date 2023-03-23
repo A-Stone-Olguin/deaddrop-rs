@@ -14,6 +14,10 @@ pub fn send_message(user: String) {
         messages::attempt_to_change_hmac();
         panic!("Attempt to change HMAC");
     }
+    else if sender.clone() == "message" {
+        messages::attempt_to_change_message();
+        std::process::exit(1);
+    }
 
     let sender_exists = match users::get_user(sender.clone()) {
         Some(_) => true,

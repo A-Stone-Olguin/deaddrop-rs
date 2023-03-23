@@ -103,4 +103,14 @@ pub fn attempt_to_change_hmac() {
     
 }
 
-//.expect("expected query to execute, if HMAC is not read-only");
+pub fn attempt_to_change_message() {
+    let db = connect();
+    let new_message = "lmao I changed the message";
+    let condition = "";
+
+    // ASK Warn here? or when reading?
+
+    let query = "UPDATE Messages SET data= :new_message WHERE data != :condition";
+    let mut stmt = db.prepare(query).expect("expected to prepare query");
+    stmt.execute(&[(":new_message", new_message), (":condition", condition)]).expect("expected query to execute, if HMAC is not read-only");
+}
