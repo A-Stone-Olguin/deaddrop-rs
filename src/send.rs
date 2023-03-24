@@ -11,6 +11,7 @@ pub fn send_message(user: String) {
 
     // This is specifically to show that we cannot change hmac, will reflect in log
     if sender.clone() == "hmac" {
+        warn!("Attempt to change HMAC from function");
         messages::attempt_to_change_hmac();
         panic!("Attempt to change HMAC");
     }

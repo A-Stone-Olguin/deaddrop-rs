@@ -6,7 +6,7 @@ use hmac::{Hmac, Mac};
 pub fn get_messages_for_user(user: String) -> Vec<String> {
     let db = connect();
 
-    let query = "SELECT data, hmac, sender FROM Messages WHERE recipient = (SELECT id FROM Users WHERE user = :user);";
+    let query = "SELECT data, hmac, sender, id FROM Messages WHERE recipient = (SELECT id FROM Users WHERE user = :user);";
     let mut stmt = db.prepare(query).expect("expected to prepare query");
     let mut rows = stmt.query(&[(":user", &user)]).expect("expected query to succeed");
 
@@ -32,7 +32,8 @@ pub fn get_messages_for_user(user: String) -> Vec<String> {
             message = format!("From user {}: {}", sender, message);
         }
         else {
-            warn!("Tampered message, failed hmac");
+            let message_id : i16 = row.get(3).expect("Expected message id");
+            warn!("Tampered message id# {}, failed hmac", message_id);
             message = format!("[Warning!] Tampered message from user {}: {}", sender, message);
         }
         messages.push(message);
@@ -87,20 +88,7 @@ pub fn attempt_to_change_hmac() {
 
     let query = "UPDATE Messages SET hmac= :new_message WHERE hmac != :condition";
     let mut stmt = db.prepare(query).expect("expected to prepare query");
-    stmt.execute(&[(":new_message", new_hmac), (":condition", condition)]).expect("expected query to execute, if HMAC is not read-only");
-    
-    // let successful_change = match stmt.execute(&[(":new_message", new_hmac), (":condition", condition)]) {
-    //     Ok(_) => true,
-    //     Err(_) => false,
-    // };
-
-    // if successful_change {
-    //     warn!("Uh oh! Someone successfully changed the HMAC :(");
-    // }
-    // else {
-    //     warn!("Someone attempted to change the HMAC!");
-    // }
-    
+    stmt.execute(&[(":new_message", new_hmac), (":condition", condition)]).expect("expected query to execute, if HMAC is not read-only");    
 }
 
 pub fn attempt_to_change_message(message_id : String) {
